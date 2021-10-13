@@ -19,7 +19,43 @@ try:
 except ImportError:
     pass
 
+if __name__ == '__main__':
+    import multiprocessing as mp
+    mp.set_start_method('spawn')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--load', help='Load a model to start training from. It overwrites BACKBONE.WEIGHTS')
+    parser.add_argument('--logdir', help='Log directory. Will remove the old one if already exists.',
+                        default='train_log/maskrcnn')
+    parser.add_argument('--config', help="A list of KEY=VALUE to overwrite those defined in config.py", nargs='+')
 
+    args = parser.parse_args()
+    if args.config:
+        cfg.update_args(args.config)
+    register_coco(cfg.DATA.BASEDIR)  # add COCO datasets to the registry
+    register_balloon(cfg.DATA.BASEDIR)  # add the demo balloon datasets to the registry
+
+    # Setup logging ...
+    is_horovod = cfg.TRAINER == 'horovod'
+    if is_horovod:
+        hvd.init()
+    if not is_horovod or hvd.rank() == 0:
+        logger.set_logger_dir(args.logdir, 'd')
+    logger.info("********************************J-test**********************************\n" + collect_env_info())
+    logger.info("********************************J-test**********************************\n")
+    logger.info("********************************J-test**********************************\n")
+    logger.info("********************************J-test**********************************\n")
+    logger.info("********************************J-test**********************************\n")
+    logger.info("********************************J-test**********************************\n")
+    print("********************************J-test**********************************\n")
+    print("********************************J-test**********************************\n")
+    print("********************************J-test**********************************\n")
+    print("********************************J-test**********************************\n")
+    print("********************************J-test**********************************\n")
+
+    finalize_configs(is_training=True)
+    
+    
+'''   
 if __name__ == '__main__':
     # "spawn/forkserver" is safer than the default "fork" method and
     # produce more deterministic behavior & memory saving
@@ -117,3 +153,4 @@ if __name__ == '__main__':
     else:
         trainer = SyncMultiGPUTrainerReplicated(cfg.TRAIN.NUM_GPUS, average=False)
     launch_train_with_config(traincfg, trainer)
+'''
